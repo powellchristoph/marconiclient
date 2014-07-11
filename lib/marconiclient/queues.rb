@@ -5,9 +5,6 @@ module Marconiclient
       @client = client
       @name = name
 
-      puts @client
-      puts @name
-
       if auto_create
         ensure_exists 
       end
@@ -29,6 +26,3 @@ module Marconiclient
 
   end
 end
-
-q = Marconiclient::Queue.new('client', 'name')
-
