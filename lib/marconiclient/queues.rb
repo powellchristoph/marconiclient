@@ -1,29 +1,30 @@
 require 'pp'
-
+require_relative 'logging'
 
 module Marconiclient
   class Queue
+    include Logging
+
+    attr_reader :name
 
     def initialize(client, name, auto_create=true)
       @name = name
       @client = client
 
-      pp 'client: ', @client
-      puts 'name: ', @name
-
+      logger.debug('Creating queue instance')
       ensure_exists if auto_create
     end
 
     def exists?
       # Checks if the queue exists
       req = @client.prepare_request
-      Core.queue_exists(req, @name)
+      req.queue_exists(@name)
     end
 
     def ensure_exists
       # Ensure the queue exists
       req = @client.prepare_request
-      Core.queue_create(req, @name)
+      req.queue_create(@name)
     end
 
     def stats
@@ -31,7 +32,7 @@ module Marconiclient
 
     def delete
       req = @client.prepare_request
-      Core.queue_delete(req, @name)
+      req.queue_delete(@name)
     end
 
     # Messages API

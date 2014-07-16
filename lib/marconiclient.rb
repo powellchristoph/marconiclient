@@ -1,13 +1,13 @@
-require_relative "marconiclient/version"
-require_relative "marconiclient/queues"
-require_relative "marconiclient/iterator"
-require_relative "marconiclient/core"
-require_relative "marconiclient/request"
+require "marconiclient/version"
+require "marconiclient/queues"
+require "marconiclient/request"
+require "marconiclient/logging"
 
 require "securerandom"
 
 module Marconiclient
   class Client
+    include Logging
     
     def initialize(url, version=1)
       @base_url = url
@@ -16,16 +16,16 @@ module Marconiclient
     end
 
     def prepare_request
-      puts 'client.prepare_request'
-      req = Request.new(@base_url, @api_version)
-      req.headers = {'Client-ID' => @uuid}
-      req
+      logger.info "prepare_request"
+      options = {:headers => { 'Client-ID' => @uuid }}
+      req = Request.new("#{@base_url}/v#{@api_version}", options)
     end
 
     def queues(**params)
       # Returns a list of queues from the server
-      
-      # TODO: define queues method
+      logger.debug('request queues')
+      req = prepare_request
+      req.queue_list
     end
 
     def queue(name, **kwargs)
@@ -40,14 +40,9 @@ module Marconiclient
     end
 
     def health
-      puts 'client.health'
+      logger.debug('request health')
       req = prepare_request
-      Core.health(req)
-    end
-
-    def home
-      # GET /v1
-      req = self.class.get("/v#{@api_version}", headers: {'Client-ID' => @uuid})
+      req.health
     end
 
   end
