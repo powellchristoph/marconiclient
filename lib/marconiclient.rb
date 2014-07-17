@@ -16,7 +16,7 @@ module Marconiclient
     end
 
     def prepare_request
-      logger.info "prepare_request"
+#      logger.info "prepare_request"
       options = {:headers => { 'Client-ID' => @uuid }}
       req = Request.new("#{@base_url}/v#{@api_version}", options)
     end
