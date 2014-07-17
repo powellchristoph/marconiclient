@@ -114,7 +114,14 @@ module Marconiclient
     def message_list
     end
 
-    def message_post
+    def message_post(name, messages)
+      # POST /v1/queues/{queue_name}/messages
+      # 201 Created
+
+      @options[:body] = messages.to_json
+      resp = Request.post("/queues/#{name}/messages", @options)
+      raise ResponseError, error(resp.code) unless resp.code == 201
+      JSON.parse resp.body
     end
 
     def message_get

@@ -37,12 +37,14 @@ module Marconiclient
       req = @client.prepare_request
 
       if merge
+        logger.debug 'Merging metadata'
         new_meta = @metadata.merge(meta)
       else
+        logger.debug 'Overwritting metadata'
         new_meta = meta
       end
 
-      logger.debug 'Overwritting meta.'
+      logger.debug 'Setting meta.'
       req.options[:body] = new_meta.to_json
       req.queue_set_metadata(@name)
       @metadata = req.queue_get_metadata(@name)
@@ -61,6 +63,12 @@ module Marconiclient
     # Messages API
 
     def post(messages)
+      if messages.class != Array
+        messages = [messages]
+      end
+
+      req = @client.prepare_request
+      req.message_post(@name, messages)
     end
 
     def message(message_id)

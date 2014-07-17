@@ -9,17 +9,17 @@ client = Marconiclient::Client.new(url)
 puts client.health
 
 # Create queue
-puts "## Create queue"
+puts "\n## Create queue ####################################"
 q = client.queue 'test_queue'
 puts "Exists? #{q.exists?}"
 
 # Update metadata
-puts "## Metadata"
+puts "\n## Metadata ####################################"
 pp q.metadata
 metadata = {:var1 => {
           :subvar1 => "alpha",
           :subvar2 => [1,2,3,4]}}
-puts "## Set metadata"
+puts "\n## Set metadata ####################################"
 q.set_metadata(metadata, merge=false)
 pp q.metadata
 metadata = {
@@ -29,17 +29,29 @@ metadata = {
   },
   :var2 => "monkey"
 }
-puts "## Merge metadata"
+puts "\n## Merge metadata ####################################"
 q.set_metadata(metadata)
 pp q.metadata
 
+# Submit message
+puts "\n## Post message ####################################"
+pp q.post({:ttl => 300, :body => { :var => "alpha"}})
+messages = Array.new
+10.times do |id|
+  messages.push({:ttl => 300, :body => {:id => id}})
+end
+#puts "## Messages"
+#pp messages
+puts "\n## Post Messages ####################################"
+pp q.post(messages)
+
 # Stats
-puts "## Stats"
+puts "\n## Stats ####################################"
 pp q.stats
 
 # Delete queue
-puts "## Delete queue"
-q.delete
+puts "\n## Delete queue ####################################"
+pp q.delete
 
 #names = [:test1, :test2, :test3]
 #queues = Array.new
