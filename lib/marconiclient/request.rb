@@ -85,7 +85,7 @@ module Marconiclient
       # 200 OK
       resp = Request.get("/queues?detailed=true", @options)
       raise ResponseError, error(resp.code) unless resp.code == 200
-      resp.body
+      JSON.parse resp.body
     end
 
     def queue_get_metadata(name)
@@ -93,7 +93,7 @@ module Marconiclient
       # 200 OK
       resp = Request.get("/queues/#{name}/metadata", @options)
       raise ResponseError, error(resp.code) unless resp.code == 200
-      resp.body
+      JSON.parse resp.body
     end
 
     def queue_set_metadata(name)
@@ -108,7 +108,7 @@ module Marconiclient
       # 200 OK
       resp = Request.get("/queues/#{name}/stats", @options)
       raise ResponseError, error(resp.code) unless resp.code == 200
-      resp.body
+      JSON.parse resp.body
     end
 
     def message_list

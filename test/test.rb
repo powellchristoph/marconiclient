@@ -16,10 +16,21 @@ puts "Exists? #{q.exists?}"
 # Update metadata
 puts "## Metadata"
 pp q.metadata
-metadata = {:var => {
-          :var2 => "varible",
-          :var3 => [1,2,3,4]}}
+metadata = {:var1 => {
+          :subvar1 => "alpha",
+          :subvar2 => [1,2,3,4]}}
+puts "## Set metadata"
 q.set_metadata(metadata, merge=false)
+pp q.metadata
+metadata = {
+  :var1 => {
+    :subvar1 => "beta",
+    :subvar2 => [1,2,3,4]
+  },
+  :var2 => "monkey"
+}
+puts "## Merge metadata"
+q.set_metadata(metadata)
 pp q.metadata
 
 # Stats

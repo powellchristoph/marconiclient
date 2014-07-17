@@ -35,14 +35,17 @@ module Marconiclient
 
     def set_metadata(meta, merge=true)
       req = @client.prepare_request
+
       if merge
-        # merge the docuemnts and set
-      else 
-        logger.debug 'Overwritting meta.'
-        req.options[:body] = meta.to_json
-        req.queue_set_metadata(@name)
-        @metadata = req.queue_get_metadata(@name)
+        new_meta = @metadata.merge(meta)
+      else
+        new_meta = meta
       end
+
+      logger.debug 'Overwritting meta.'
+      req.options[:body] = new_meta.to_json
+      req.queue_set_metadata(@name)
+      @metadata = req.queue_get_metadata(@name)
     end
 
     def stats
