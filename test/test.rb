@@ -7,6 +7,14 @@ url = 'http://162.209.105.136'
 client = Marconiclient::Client.new(url)
 
 puts client.health
+qlist = client.queues
+unless qlist.nil?
+  puts "Found old queues..."
+  qlist.each do |q|
+    puts "Deleting #{q.name}"
+    puts q.delete
+  end
+end
 
 # Create queue
 puts "\n## Create queue ####################################"
@@ -44,6 +52,23 @@ end
 #pp messages
 puts "\n## Post Messages ####################################"
 pp q.post(messages)
+
+puts "\n## Get Message List ####################################"
+puts "Should be empty Array..."
+mlist = q.messages
+if mlist.empty? && mlist.class == Array
+  puts 'Empty array received'
+else
+  puts "Got something weird: \n#{mlist}"
+end
+
+puts "Echo = true, echo back own messages..."
+message_list = q.messages(echo: true)
+pp message_list
+
+puts "\n## Get Message by ID ####################################"
+puts "First message in message_list"
+id = message_list[0].
 
 # Stats
 puts "\n## Stats ####################################"

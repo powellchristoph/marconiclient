@@ -21,11 +21,21 @@ module Marconiclient
       req = Request.new("#{@base_url}/v#{@api_version}", options)
     end
 
+    def create_queues(listing_response)
+      if listing_response[:queues].nil?
+        listing_response[:queues]
+      else
+        queues = Array.new
+        listing_response[:queues].each { |q| queues << Queue.new(self, q[:name])}
+        queues
+      end
+    end
+
     def queues(**params)
       # Returns a list of queues from the server
       logger.debug('request queues')
       req = prepare_request
-      req.queue_list
+      create_queues req.queue_list
     end
 
     def queue(name, **kwargs)

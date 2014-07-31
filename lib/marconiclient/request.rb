@@ -80,12 +80,21 @@ module Marconiclient
       raise ResponseError, error(resp.code) unless resp.code == 204
     end
 
-    def queue_list
+    def queue_list(limit: 20, detailed: true)
       # GET /v1/queues{?marker,limit,detailed}
       # 200 OK
-      resp = Request.get("/queues?detailed=true", @options)
-      raise ResponseError, error(resp.code) unless resp.code == 200
-      JSON.parse resp.body
+      # TODO: Add follow links to get more than 20 queues
+      @options[:query] = {
+        :limit => limit,
+        :detailed => detailed }
+      resp = Request.get("/queues", @options)
+      if resp.code == 200
+        JSON.parse(resp.body, symbolize_names: true)
+      elsif resp.code == 204
+        {:links => [], :queues => []}
+      else
+        raise ResponseError, error(resp.code) unless resp.code == 200
+      end
     end
 
     def queue_get_metadata(name)
@@ -93,7 +102,7 @@ module Marconiclient
       # 200 OK
       resp = Request.get("/queues/#{name}/metadata", @options)
       raise ResponseError, error(resp.code) unless resp.code == 200
-      JSON.parse resp.body
+      JSON.parse(resp.body, symbolize_names: true)
     end
 
     def queue_set_metadata(name)
@@ -108,10 +117,40 @@ module Marconiclient
       # 200 OK
       resp = Request.get("/queues/#{name}/stats", @options)
       raise ResponseError, error(resp.code) unless resp.code == 200
-      JSON.parse resp.body
+      JSON.parse(resp.body, symbolize_names: true)
     end
 
-    def message_list
+    def message_list(name, limit: 10, echo: false, marker: nil, include_claimed: false)
+      @options[:query] = {
+        :limit => limit,
+        :echo => echo,
+        :marker => marker,
+        :include_claimed => include_claimed}
+      resp = Request.get("/queues/#{name}/messages", @options)
+      if resp.code == 200
+        JSON.parse(resp.body, symbolize_names: true)
+      elsif resp.code == 204
+        {:links => [], :messages => []}
+      else
+        raise ResponseError, error(resp.code)
+      end
+    end
+
+    def message_get_many(name, messages, limit: 10, echo: false, marker: nil, include_claimed: false)
+      raise 'Funcion not implemented.'
+#      @options[:query] = {
+#        :limit => limit,
+#        :echo => echo,
+#        :marker => marker,
+#        :include_claimed => include_claimed}
+#      resp = Request.get("/queues/#{name}/messages", @options)
+#      if resp.code == 200
+#        JSON.parse(resp.body, symbolize_names: true)
+#      elsif resp.code == 204
+#        nil
+#      else
+#        raise ResponseError, error(resp.code)
+#      end
     end
 
     def message_post(name, messages)
@@ -121,14 +160,15 @@ module Marconiclient
       @options[:body] = messages.to_json
       resp = Request.post("/queues/#{name}/messages", @options)
       raise ResponseError, error(resp.code) unless resp.code == 201
-      JSON.parse resp.body
+      JSON.parse(resp.body, symbolize_names: true)
     end
 
-    def message_get
+    def message_get(name, id)
+      resp = Request.get("/queues/#{name}/messages/#{id}", @options)
+      raise ResponseError, error(resp.code) unless resp.code == 200
+      JSON.parse(resp.body, symbolize_names: true)
     end
 
-    def message_get_many
-    end
 
     def message_delete
     end

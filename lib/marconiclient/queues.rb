@@ -1,5 +1,6 @@
 require 'pp'
 require_relative 'logging'
+require_relative 'message'
 
 module Marconiclient
   class Queue
@@ -72,9 +73,28 @@ module Marconiclient
     end
 
     def message(message_id)
+      # Return Message object
+      req = @client.prepare_request
+      Message.new(req.message_get(@name, message_id))
     end
 
-    def messages(*messages, **params)
+    def create_messages(response_list)
+      msg_list = Array.new
+      unless response_list[:messages].empty?
+        response_list[:messages].each { |m| msg_list << Message.new(m) }
+      end
+      msg_list
+    end
+
+    def messages(messages: nil, **params)
+      # Return array of Messages
+      req = @client.prepare_request
+      if messages.nil?
+        create_messages req.message_list(@name, params)
+      else
+        create_messages req.message_get_many(@name, messages, params)
+        # TODO: return msg_list
+      end
     end
 
     def claim(id=nil, ttl=nil, grace=nil, limit=nil)
