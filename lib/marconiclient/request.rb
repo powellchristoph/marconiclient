@@ -46,11 +46,20 @@ module Marconiclient
       end
     end
 
+    def home
+      # GET /v1/
+      # return 200
+      response = Request.get("/", @options)
+      raise ResponseError, error(response.code) unless response.code == 200
+      JSON.parse(response.body, symbolize_names: true)
+    end
+
     def health
       # GET /v1/health
-      # return 204
+      # return 204 / 503 service unavailable
       response = Request.get("/health", @options)
       raise ResponseError, error(response.code) unless response.code == 204
+      true
     end
 
     def queue_exists(name)
@@ -93,7 +102,7 @@ module Marconiclient
       elsif resp.code == 204
         {:links => [], :queues => []}
       else
-        raise ResponseError, error(resp.code) unless resp.code == 200
+        raise ResponseError, error(resp.code)
       end
     end
 

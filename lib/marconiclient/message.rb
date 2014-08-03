@@ -15,13 +15,13 @@ module Marconiclient
       # or
       # /v1/queues/worker-jobs/messages/5c6939a8
       @id = @href.split('/')[-1]
-      if '?' in @id
+      if @id.include? "?"
         @id = @id.split('?')[0]
       end
     end
 
     def claim_id
-      if '=' in @id
+      if @id.include? "="
         @id.split('=')[-1]
       end
     end

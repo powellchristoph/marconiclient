@@ -38,9 +38,9 @@ module Marconiclient
       create_queues req.queue_list
     end
 
-    def queue(name, **kwargs)
+    def queue(name, auto_create=true)
       # Returns a queue instance
-      Queue.new(self, name)
+      Queue.new(self, name, auto_create)
     end
 
     def follow(ref)
@@ -53,6 +53,11 @@ module Marconiclient
       logger.debug('request health')
       req = prepare_request
       req.health
+    end
+
+    def home
+      req = prepare_request
+      req.home
     end
 
   end

@@ -1,6 +1,6 @@
 ## Main
-Get Home document
-Check node health
+Get Home document, done w/test
+Check node health, done w/test
 
 ## Queues
 Create queue

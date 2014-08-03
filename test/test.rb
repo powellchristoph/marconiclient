@@ -6,7 +6,10 @@ require 'pp'
 url = 'http://162.209.105.136'
 client = Marconiclient::Client.new(url)
 
-puts client.health
+puts client.home
+
+puts "##### Health"
+pp client.health
 qlist = client.queues
 unless qlist.nil?
   puts "Found old queues..."
