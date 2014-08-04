@@ -12,8 +12,8 @@ module Marconiclient
       @name = name
       @client = client
 
-      logger.debug('Creating queue instance')
-      ensure_exists if auto_create
+      #logger.debug('Creating queue instance')
+      create if auto_create
     end
 
     def exists?
@@ -22,15 +22,15 @@ module Marconiclient
       req.queue_exists(@name)
     end
 
-    def ensure_exists
-      # Ensure the queue exists
+    def create 
+      # Creates the given queue
       req = @client.prepare_request
       req.queue_create(@name) unless exists?
     end
 
     def metadata
       # Get metadata and return it
-      logger.debug 'Checking metadata'
+      #logger.debug 'Checking metadata'
       @metadata ||= @client.prepare_request.queue_get_metadata(@name)
     end
 
@@ -38,14 +38,14 @@ module Marconiclient
       req = @client.prepare_request
 
       if merge
-        logger.debug 'Merging metadata'
+        #logger.debug 'Merging metadata'
         new_meta = @metadata.merge(meta)
       else
-        logger.debug 'Overwritting metadata'
+        #logger.debug 'Overwritting metadata'
         new_meta = meta
       end
 
-      logger.debug 'Setting meta.'
+      #logger.debug 'Setting meta.'
       req.options[:body] = new_meta.to_json
       req.queue_set_metadata(@name)
       @metadata = req.queue_get_metadata(@name)

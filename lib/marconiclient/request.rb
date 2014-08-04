@@ -89,13 +89,14 @@ module Marconiclient
       raise ResponseError, error(resp.code) unless resp.code == 204
     end
 
-    def queue_list(limit: 20, detailed: true)
+    def queue_list(options={})
       # GET /v1/queues{?marker,limit,detailed}
       # 200 OK
       # TODO: Add follow links to get more than 20 queues
       @options[:query] = {
-        :limit => limit,
-        :detailed => detailed }
+        :limit => 20,
+        :detailed => true,
+      }.merge(options)
       resp = Request.get("/queues", @options)
       if resp.code == 200
         JSON.parse(resp.body, symbolize_names: true)
