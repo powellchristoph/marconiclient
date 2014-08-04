@@ -87,6 +87,14 @@ describe "Marconiclient" do
       end
     end
 
+    describe 'stats' do
+      it 'should return Hash' do
+        manual_queue.create
+        manual_queue.stats.should be_an_instance_of Hash
+        manual_queue.delete
+      end
+    end
+
     describe 'metadata' do
       let(:metadata_queue) { client.queue 'metadata' }
 
