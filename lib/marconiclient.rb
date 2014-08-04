@@ -36,6 +36,7 @@ module Marconiclient
       #logger.debug('request queues')
       req = prepare_request
       response = req.queue_list options
+      response[:queues]
     end
 
     def queue(name, auto_create=true)

@@ -5,7 +5,6 @@ describe "Marconiclient" do
   let(:client) { Marconiclient::Client.new(MARCONI_SERVER) }
 
   describe 'new client' do
-
     it 'should return a client object' do
       client.should be_an_instance_of Marconiclient::Client
     end
@@ -62,17 +61,11 @@ describe "Marconiclient" do
         let(:resp) { client.queues }
   
         it 'should return Hash' do
-          resp.should be_an_instance_of Hash
-        end
-  
-        it 'should have links and queues' do
-          resp.should have_key(:links)
-          resp.should have_key(:queues)
+          resp.should be_an_instance_of Array
         end
   
         it 'should be empty' do
-          resp[:links].should be_empty
-          resp[:queues].should be_empty
+          resp.should be_empty
         end
       end
 
@@ -88,13 +81,82 @@ describe "Marconiclient" do
 
         let(:resp) { client.queues }
 
-        it 'should have links and queues' do
-          resp.should have_key(:links)
-          resp.should have_key(:queues)
+        it 'should have 5 queues' do
+          resp.should have(5).items
+        end
+      end
+    end
+
+    describe 'metadata' do
+      let(:metadata_queue) { client.queue 'metadata' }
+
+      after(:all) { metadata_queue.delete }
+
+      describe 'get from queue' do
+        it 'should be Hash' do
+          metadata_queue.metadata.should be_an_instance_of Hash
         end
 
-        it 'should have 5 queues' do
-          resp[:queues].should have(5).items
+        it 'should be empty' do
+          metadata_queue.metadata.should be_empty
+        end
+      end
+
+      describe 'set' do
+        it 'should be a Hash' do
+          meta = metadata_queue.set_metadata(:var1 => 'foo', :var2 => 'bar')
+          meta.should be_an_instance_of Hash
+        end
+
+        it 'should have content var1:foo var2:bar' do
+          meta = metadata_queue.metadata
+          meta.should include(
+            :var1 => 'foo',
+            :var2 => 'bar'
+          )
+        end
+      end
+
+      describe 'merge' do
+        it 'should be a Hash' do
+          metadata_queue.set_metadata(:var3 => 'baz').should be_an_instance_of Hash
+        end
+
+        it 'should have content var1:foo var2:bar var3:baz' do
+          meta = metadata_queue.metadata
+          meta.should include(
+            :var1 => 'foo',
+            :var2 => 'bar',
+            :var3 => 'baz'
+          )
+        end
+      end
+
+      describe 'update' do
+        it 'should have content var1:foo var2:bar var3:foobar' do
+          metadata_queue.set_metadata(:var3 => 'foobar').should include(
+            :var1 => 'foo',
+            :var2 => 'bar',
+            :var3 => 'foobar'
+          )
+        end
+      end
+
+      describe 'overwrite' do
+        it 'should be a Hash' do
+          metadata_queue.set_metadata({:var => 'foobar'}, true).should be_an_instance_of Hash
+        end
+
+        it 'should only have content var:foobar' do
+          meta = metadata_queue.metadata
+          meta.should include(
+            :var => 'foobar'
+          )
+          meta.should_not include(
+            :var1 => 'foo',
+            :var2 => 'bar',
+            :var2 => 'baz',
+          )
         end
       end
     end

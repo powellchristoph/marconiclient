@@ -9,8 +9,8 @@ Check queue existence, done w/test
 Delete queue, done w/test
 
 ## Queue Metadata
-Set queue metadata
-Get queue metadata
+Set queue metadata, done w/test
+Get queue metadata, done w/test
 Get queue stats
 
 ## Messages

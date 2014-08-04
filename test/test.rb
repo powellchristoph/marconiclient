@@ -14,36 +14,37 @@ qlist = client.queues
 pp qlist
 unless qlist.nil?
   puts "Found old queues..."
-  qlist.each do |q|
-    puts "Deleting #{q.name}"
+  qlist.each do |queue|
+    q = client.queue(queue[:name])
+    puts "Deleting #{queue[:name]}"
     puts q.delete
   end
 end
 
 ## Create queue
-#puts "\n## Create queue ####################################"
-#q = client.queue 'test_queue'
+puts "\n## Create queue ####################################"
+q = client.queue 'test_queue'
 #puts "Exists? #{q.exists?}"
 #
 ## Update metadata
-#puts "\n## Metadata ####################################"
-#pp q.metadata
-#metadata = {:var1 => {
-#          :subvar1 => "alpha",
-#          :subvar2 => [1,2,3,4]}}
-#puts "\n## Set metadata ####################################"
-#q.set_metadata(metadata, merge=false)
-#pp q.metadata
-#metadata = {
-#  :var1 => {
-#    :subvar1 => "beta",
-#    :subvar2 => [1,2,3,4]
-#  },
-#  :var2 => "monkey"
-#}
-#puts "\n## Merge metadata ####################################"
-#q.set_metadata(metadata)
-#pp q.metadata
+puts "\n## Metadata ####################################"
+pp q.metadata
+metadata = {:var1 => {
+          :subvar1 => "alpha",
+          :subvar2 => [1,2,3,4]}}
+puts "\n## Set metadata ####################################"
+q.set_metadata(metadata)
+pp q.metadata
+metadata = {
+  :var1 => {
+    :subvar1 => "beta",
+    :subvar2 => [1,2,3,4]
+  },
+  :var2 => "monkey"
+}
+puts "\n## Merge metadata ####################################"
+q.set_metadata(metadata)
+pp q.metadata
 #
 ## Submit message
 #puts "\n## Post message ####################################"
@@ -79,28 +80,5 @@ end
 #pp q.stats
 #
 ## Delete queue
-#puts "\n## Delete queue ####################################"
-#pp q.delete
-#
-##names = [:test1, :test2, :test3]
-##queues = Array.new
-##
-##puts 'Create queues'
-##names.each do |n|
-##  q = client.queue(n)
-##  puts "#### #{q.name}"
-##  queues.push(q)
-##end
-##
-##puts 'List queues'
-##pp client.queues
-##
-##queues.each do |q|
-##  puts "#{q.name.upcase}"
-##  puts 'Exists?'
-##  puts q.exists?
-##  puts 'Delete'
-##  puts q.delete
-##  puts 'Exists?'
-##  puts q.exists?
-##end
+puts "\n## Delete queue ####################################"
+pp q.delete

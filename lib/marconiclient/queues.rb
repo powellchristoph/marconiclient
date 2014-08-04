@@ -1,4 +1,3 @@
-require 'pp'
 require_relative 'logging'
 require_relative 'message'
 
@@ -34,19 +33,12 @@ module Marconiclient
       @metadata ||= @client.prepare_request.queue_get_metadata(@name)
     end
 
-    def set_metadata(meta, merge=true)
+    def set_metadata(meta={}, overwrite=false)
       req = @client.prepare_request
-
-      if merge
-        #logger.debug 'Merging metadata'
-        new_meta = @metadata.merge(meta)
-      else
-        #logger.debug 'Overwritting metadata'
-        new_meta = meta
-      end
+      metadata = overwrite ? meta : self.metadata.merge(meta)
 
       #logger.debug 'Setting meta.'
-      req.options[:body] = new_meta.to_json
+      req.options[:body] = metadata.to_json
       req.queue_set_metadata(@name)
       @metadata = req.queue_get_metadata(@name)
     end
