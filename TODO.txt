@@ -4,9 +4,9 @@ Check node health, done w/test
 
 ## Queues
 Create queue, done w/test
-List queues
-Check queue existence
-Delete queue
+List queues, done w/test
+Check queue existence, done w/test
+Delete queue, done w/test
 
 ## Queue Metadata
 Set queue metadata
