@@ -3,8 +3,8 @@ module Marconiclient
 
     attr_reader :queue, :href, :ttl, :age, :body
 
-    def initialize(options)
-      @queue = options[:queue]
+    def initialize(queue, options={})
+      @queue = queue
       @href = options[:href]
       @ttl = options[:ttl]
       @age = options[:age]

@@ -130,12 +130,10 @@ module Marconiclient
       JSON.parse(resp.body, symbolize_names: true)
     end
 
-    def message_list(name, limit: 10, echo: false, marker: nil, include_claimed: false)
+    #def message_list(name, limit: 10, echo: false, marker: nil, include_claimed: false)
+    def message_list(name, opts={})
       @options[:query] = {
-        :limit => limit,
-        :echo => echo,
-        :marker => marker,
-        :include_claimed => include_claimed}
+        :limit => 10,}.merge(opts)
       resp = Request.get("/queues/#{name}/messages", @options)
       if resp.code == 200
         JSON.parse(resp.body, symbolize_names: true)
@@ -146,27 +144,24 @@ module Marconiclient
       end
     end
 
-    def message_get_many(name, messages, limit: 10, echo: false, marker: nil, include_claimed: false)
-      raise 'Funcion not implemented.'
-#      @options[:query] = {
-#        :limit => limit,
-#        :echo => echo,
-#        :marker => marker,
-#        :include_claimed => include_claimed}
-#      resp = Request.get("/queues/#{name}/messages", @options)
-#      if resp.code == 200
-#        JSON.parse(resp.body, symbolize_names: true)
-#      elsif resp.code == 204
-#        nil
-#      else
-#        raise ResponseError, error(resp.code)
-#      end
+    def message_get_many(name, messages, opts={})
+      @options[:query] = {
+        :limit => 10,
+        :ids => messages.join(','), }.merge(opts)
+      #@options[:debug_output] = $stdout
+      resp = Request.get("/queues/#{name}/messages", @options)
+      if resp.code == 200
+        JSON.parse(resp.body, symbolize_names: true)
+      elsif resp.code == 204
+        {:links => [], :messages => []}
+      else
+        raise ResponseError, error(resp.code)
+      end
     end
 
     def message_post(name, messages)
       # POST /v1/queues/{queue_name}/messages
       # 201 Created
-
       @options[:body] = messages.to_json
       resp = Request.post("/queues/#{name}/messages", @options)
       raise ResponseError, error(resp.code) unless resp.code == 201

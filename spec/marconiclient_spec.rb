@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pp'
 
 describe "Marconiclient" do
 
@@ -169,4 +170,109 @@ describe "Marconiclient" do
       end
     end
   end
+
+  describe 'messages endpoints' do
+    let(:messages_q) { client.queue('messages_q') }
+    let(:list) { messages_q.messages }
+
+    after(:all) { messages_q.delete }
+
+    it 'should post single message' do
+      m = messages_q.post(:ttl => 300, :body => 'message 1')
+      m.should include(:resources)
+    end
+
+    it 'should post many messages' do
+      messages = [
+        { :ttl => 300, :body => 'message 2'}, 
+        { :ttl => 300, :body => 'message 3'}, 
+        { :ttl => 300, :body => 'message 4'}
+      ]
+      list = messages_q.post(messages)
+      list.should include(:resources)
+    end
+
+    describe 'list messages' do
+      describe 'with no options' do
+        it 'should return Array' do
+          list.should be_an_instance_of Array
+        end
+
+        it 'should contain Messages' do
+          list[0].should be_an_instance_of Marconiclient::Message
+        end
+
+        it 'should have 4 messages' do
+          list.should have(4).items
+        end
+      end
+
+      describe 'with options' do
+        let(:list_options) { messages_q.messages(options={echo: true, limit: 20}) }
+
+        it 'should return Array' do
+          list_options.should be_an_instance_of Array
+        end
+
+        it 'should contain Messages' do
+          list_options[0].should be_an_instance_of Marconiclient::Message
+        end
+
+        it 'should have 4 messages' do
+          list_options.should have(4).items
+        end
+      end
+    end
+
+    describe 'get' do
+      before(:all) do
+        @mlist = Array.new
+        @queue = client.queue('my_queue')
+        messages = [
+          {ttl: 300, body: "message"},
+          {ttl: 300, body: "message"},
+          {ttl: 300, body: "message"}]
+        resources = @queue.post(messages)[:resources]
+        resources.each { |r| @mlist << r.split('/')[-1] }
+      end
+
+      after(:all) { @queue.delete }
+
+      describe 'single message' do
+        it 'should be a Message' do
+          m = @queue.message(@mlist[0])
+          m.should be_an_instance_of Marconiclient::Message
+        end
+      end
+
+      describe 'many messages' do
+        it 'should be an Array' do
+          @queue.messages(messages: @mlist).should be_an_instance_of Array
+        end
+
+        it 'should contain 3 Messages' do
+          messages = @queue.messages(messages: @mlist)
+          messages.should have(3).items
+        end
+      end
+
+      describe 'delete' do
+        it 'a single message' do
+          m = @queue.message(@mlist[0])
+          m.delete
+        end
+          
+        it 'a set of messages' do
+          messages = @queue.messages(messages: @mlist)
+          messages.each { |m| m.delete }
+        end
+
+        it 'queue should be empty' do
+          messages = @queue.messages
+          messages.should be_empty
+        end
+      end
+    end
+  end
 end
+

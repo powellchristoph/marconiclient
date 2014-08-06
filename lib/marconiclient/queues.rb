@@ -67,26 +67,26 @@ module Marconiclient
     def message(message_id)
       # Return Message object
       req = @client.prepare_request
-      Message.new(req.message_get(@name, message_id))
+      output = req.message_get(@name, message_id)
+      Message.new(self, output)
     end
 
-    def create_messages(response_list)
-      msg_list = Array.new
-      unless response_list[:messages].empty?
-        response_list[:messages].each { |m| msg_list << Message.new(m) }
-      end
-      msg_list
-    end
-
-    def messages(messages: nil, **params)
+    def messages(messages: nil, **options)
       # Return array of Messages
       req = @client.prepare_request
+      msg_list = Array.new
       if messages.nil?
-        create_messages req.message_list(@name, params)
+        response_list = req.message_list(@name, options)
+        unless response_list[:messages].empty?
+          response_list[:messages].each { |m| msg_list << Message.new(self, m) }
+        end
       else
-        create_messages req.message_get_many(@name, messages, params)
-        # TODO: return msg_list
+        response_list = req.message_get_many(@name, messages, options)
+        unless response_list.empty?
+          response_list.each { |m| msg_list << Message.new(self, m) }
+        end
       end
+      msg_list
     end
 
     def claim(id=nil, ttl=nil, grace=nil, limit=nil)

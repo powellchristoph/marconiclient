@@ -11,14 +11,16 @@ Delete queue, done w/test
 ## Queue Metadata
 Set queue metadata, done w/test
 Get queue metadata, done w/test
-Get queue stats
+Get queue stats, done w/test
 
 ## Messages
-List messages
-Get a message by ID
-Get a set of messages by ID
-Delete a message
-Delete a set of messages by ID
+List messages, done w/test
+Get a message by ID, done w/test
+Get a set of messages by ID, done w/test
+Post a message, done w/test
+Post a set of messages, done w/test
+Delete a message, done w/test
+Delete a set of messages by ID, done w/test
 
 ## Claims
 Claim a message
